@@ -1,37 +1,37 @@
 #! /usr/bin/perl
 #
 #   ps-euc-jis-patch.pl --
-#	tgif-2.16j-p12 ���Ǥ��� PS�ե�����������ơ�
-#	�Ƕ��PostScript�ץ�󥿤ǽ����Ǥ���褦�ˤ���
-#	���ܸ�ʸ����ϡ���ꥵ��ե���Ȥ������ʿ���ե���Ȥ�Ȥ�
+#	tgif-2.16j-p12 が吐いた PSファイルを修正して、
+#	最近のPostScriptプリンタで処理できるようにする
+#	日本語文字列は、モリサワフォントの代わりに平成フォントを使う
 #
-#   �ѹ�����:
+#   変更履歴:
 #	0.1: Aug. 4, 1998 by Dai ISHIJIMA
 #
-#   �Ȥ�����:
+#   使いかた:
 #	ps-euc-jis-patch.pl < foo.ps > baa.ps
 #
-#   ����:
-#	�Ǥ� tgif-2.16j-p12�������
-#	CID�ѥå� (CIDfont-patch for tgif-216pl12jp v1.1) ��
-#	�����äƤ��� tgif ���б����Ƥ��ޤ���
+#   備考:
+#	素の tgif-2.16j-p12、および
+#	CIDパッチ (CIDfont-patch for tgif-216pl12jp v1.1) の
+#	あたっている tgif に対応しています。
 #
-#   ư���ǧ:
-#	ghostscript-2.6.2 + 261j ������ʿ���ե���ȥ��ݡ��Ȼ�
-#	    (PostScript�С������ 54.0)
+#   動作確認:
+#	ghostscript-2.6.2 + 261j ただし平成フォントサポート時
+#	    (PostScriptバージョン 54.0)
 #	Apple LaserWriter 16/600PS-J
-#	    (PostScript�С������ 2014.106)
-#	Xerox LaserWind 1040PS + ���ץ����ե����J2
-#	    (PostScript�С������ 2014.107)
+#	    (PostScriptバージョン 2014.106)
+#	Xerox LaserWind 1040PS + オプションフォントJ2
+#	    (PostScriptバージョン 2014.107)
 #	Xerox LaserPress 2100PS
-#	    (PostScript�С������ 2016.108)
+#	    (PostScriptバージョン 2016.108)
 #
 
 while (<>) {
-    if (/^(.* \()([^\(]*\\[0-9].*)(\) .*show.*$)/) { # ���ܸ�ʸ���󤢤�
+    if (/^(.* \()([^\(]*\\[0-9].*)(\) .*show.*$)/) { # 日本語文字列あり
 	print "% !", $1, " | ", $2, " | ", $3, "\n";
 	#
-	# \[0-3][0-7][0-7] ������ʸ�����ƥ���ֿʹֲ��ɷ����פˤ���
+	# \[0-3][0-7][0-7] 形式の文字列リテラルを「人間可読形式」にする
 	#
 	$len = length($2);
 	$showstring = "";
@@ -51,7 +51,7 @@ while (<>) {
 	}
 	print "% !", $1, $showstring, $3, "\n";
 	#
-	# asciiʸ�����EUCʸ����δ֤˥��������ץ����ɤ���������
+	# ascii文字列とEUC文字列の間にエスケープコードを挿入する
 	#
 	$escape = "";
 	$mode = "ASCII";
@@ -66,7 +66,7 @@ while (<>) {
 		$escape = $escape . "\\377\\000";
 		$mode = "ASCII";
 	    }
-	    # 8�ӥå��ܤ򥪥դˤ��ơ�JIS���󥳡��ǥ��󥰤ˤ���
+	    # 8ビット目をオフにして、JISエンコーディングにする
 	    $escape = $escape . sprintf("%c", ord($ch) & 0x7f);
 	}
 	print $1, $escape, $3, "\n";
@@ -75,7 +75,7 @@ while (<>) {
 	print ;
     }
 #
-#   PS�ե��������Ƭ���񤭴���
+#   PSファイルの先頭部書き換え
 #
     if (/^tgifdict begin/) {
 	print <<"EOF"
@@ -131,4 +131,4 @@ EOF
     }
 }
 
-# �����ޤ�
+# おしまい
