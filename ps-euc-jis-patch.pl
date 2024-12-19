@@ -28,24 +28,28 @@
 #
 
 while (<>) {
-    if (/^(.* \()([^\(]*\\[0-9].*)(\) .*show.*$)/) { # 日本語文字列あり
+    if (/^(.* \()(.*\\[0-9].*)(\) .*show.*$)/) { # 日本語文字列あり
 	print "% !", $1, " | ", $2, " | ", $3, "\n";
 	#
 	# \[0-3][0-7][0-7] 形式の文字列リテラルを「人間可読形式」にする
 	#
-	$len = length($2);
+	$mystr = $2;
+	$len = length($mystr);
 	$showstring = "";
 	for ($i = 0; $i < $len; $i++) {
-	    $ch = substr($2, $i, 1);
-	    if (($ch eq "\\") && (substr($2, $i + 1, 1) =~ "[0-3]")) {
+	    $ch = substr($mystr, $i, 1);
+	    if (($ch eq "\\") && (substr($mystr, $i + 1, 1) =~ "[0-3]")) {
 		$oct = 0;
 		for ($j = 0; $j < 3; $j++) {
 		    ++$i;
-		    $oct = $oct * 8 + ord(substr($2, $i, 1)) - ord('0');
+		    $oct = $oct * 8 + ord(substr($mystr, $i, 1)) - ord('0');
 		}
 		$showstring = $showstring . sprintf("%c", $oct);
 	    }
-	    else {
+	    elsif (($ch eq "\\") && (substr($mystr, $i + 1, 1) =~ "[\(\)]")) {
+		$showstring = $showstring . substr($mystr, $i + 1, 1);
+		++$i;
+	    } else {
 		$showstring = $showstring . $ch;
 	    }
 	}
@@ -67,7 +71,7 @@ while (<>) {
 		$mode = "ASCII";
 	    }
 	    # 8ビット目をオフにして、JISエンコーディングにする
-	    $escape = $escape . sprintf("%c", ord($ch) & 0x7f);
+	    $escape = $escape . sprintf("\\%o", ord($ch) & 0x7f);
 	}
 	print $1, $escape, $3, "\n";
     }
@@ -89,7 +93,7 @@ while (<>) {
     dup
     /GothicBBB-Medium-EUC-H eq {
 	pop
-	/HeiseiKakuGo-W5-H
+        /GothicBBB-Medium-H
     } if
     dup
     /GothicBBB-Medium-EUC-V eq {
@@ -99,7 +103,7 @@ while (<>) {
     dup
     /Ryumin-Light-EUC-H eq {
 	pop
-	/HeiseiMin-W3-H
+        /Ryumin-Light-H
     } if
     dup
     /Ryumin-Light-EUC-V eq {
