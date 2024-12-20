@@ -98,7 +98,7 @@ while (<>) {
     dup
     /GothicBBB-Medium-EUC-V eq {
 	pop
-	/HeiseiKakuGo-W5-V
+	/GothicBBB-Medium-V
     } if
     dup
     /Ryumin-Light-EUC-H eq {
@@ -108,7 +108,7 @@ while (<>) {
     dup
     /Ryumin-Light-EUC-V eq {
 	pop
-	/HeiseiMin-W3-V
+	/Ryumin-Light-V
     } if
     20 dict begin
 	/FontType 0 def
